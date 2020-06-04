@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useRegisterMutation, useHelloQuery } from "../generated/graphql";
+import { RouteComponentProps } from "react-router-dom";
 
 interface Props {}
 
-export const Register: React.FC<Props> = () => {
+export const Register: React.FC<RouteComponentProps> = ({history}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [register] = useRegisterMutation();
@@ -19,6 +20,8 @@ export const Register: React.FC<Props> = () => {
             password
           }
         });
+
+        history.push("/");
         console.log(response);
       }}
     >
@@ -30,7 +33,7 @@ export const Register: React.FC<Props> = () => {
             setEmail(e.target.value);
           }}
         />
-      </div>
+      </div> 
 
       <div>
         <input
