@@ -1,43 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useRegisterMutation, useHelloQuery } from "../generated/graphql";
 
-interface Props {
-
-}
+interface Props {}
 
 export const Register: React.FC<Props> = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [register] = useRegisterMutation();
 
-    return (
-        <form
-            onSubmit={e => {
-                e.preventDefault()
-                console.log('form submitted');
-                console.log(email, password);
-            }}
-        >
-            <div>
-                <input
-                    value={email}
-                    placeholder="email"
-                    onChange={e => {
-                        setEmail(e.target.value)
-                    }}
-                />
-            </div>
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        console.log("form submitted");
+        const response = await register({
+          variables:{
+            email, 
+            password
+          }
+        });
+        console.log(response);
+      }}
+    >
+      <div>
+        <input
+          value={email}
+          placeholder="email"
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+        />
+      </div>
 
-            <div>
-                <input
-                    type='password'
-                    value={password}
-                    placeholder="password"
-                    onChange={e => {
-                        setPassword(e.target.value)
-                    }}
-                />
-            </div>
-            <button type="submit">register</button>
-        </form>
-    )
-
-}
+      <div>
+        <input
+          type="password"
+          value={password}
+          placeholder="password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+        />
+      </div>
+      <button type="submit">register</button>
+    </form>
+  );
+};
