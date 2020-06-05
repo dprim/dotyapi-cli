@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useRegisterMutation, useHelloQuery } from "../generated/graphql";
+import { useRegisterMutation  } from "../generated/graphql";
 import { RouteComponentProps } from "react-router-dom";
 
 interface Props {}
