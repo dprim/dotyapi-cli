@@ -1,30 +1,64 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Routes } from './Routes';
-import ApolloClient from "apollo-boost";
+import React from "react";
+import ReactDOM from "react-dom";
 import { ApolloProvider } from "@apollo/react-hooks";
-import { getAccessToken } from './getAccessToken';
-import { App } from './App';
+import { getAccessToken } from "./getAccessToken";
+import { App } from "./App";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
+import { onError } from "apollo-link-error";
+import { ApolloLink, Observable } from "apollo-link";
 
+const cache = new InMemoryCache({});
+
+const requestLink = new ApolloLink(
+  (operation, forward) =>
+    new Observable((observer) => {
+      let handle: any;
+      Promise.resolve(operation)
+        .then((operation) => {
+          const token = getAccessToken();
+          if (token) {
+            operation.setContext({
+              headers: {
+                authorization: `bearer ${token}`,
+              },
+            });
+          }
+        })
+        .then(() => {
+          handle = forward(operation).subscribe({
+            next: observer.next.bind(observer),
+            error: observer.error.bind(observer),
+            complete: observer.complete.bind(observer),
+          });
+        })
+        .catch(observer.error.bind(observer));
+
+      return () => {
+        if (handle) handle.unsubscribe();
+      };
+    })
+);
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8000/graphql',
-  credentials: 'include',
-  request: (operation) => {
-    const token = getAccessToken();
-    if (token) {
-      operation.setContext({
-        headers: {
-          authorization: `bearer ${token}`
-        }
-      });
-    }
-  }
+  link: ApolloLink.from([
+    onError(({ graphQLErrors, networkError }) => {
+      console.log(graphQLErrors);
+      console.log(networkError);
+    }),
+    requestLink,
+    new HttpLink({
+      uri: "http://localhost:8000/graphql",
+      credentials: "include",
+    }),
+  ]),
+  cache,
 });
 
 ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
   </ApolloProvider>,
-  document.getElementById('root')
-); 
+  document.getElementById("root")
+);
