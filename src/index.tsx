@@ -1,13 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "@apollo/react-hooks";
-import { getAccessToken } from "./getAccessToken";
+import { getAccessToken, setAccessToken } from "./getAccessToken";
 import { App } from "./App";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 import { onError } from "apollo-link-error";
 import { ApolloLink, Observable } from "apollo-link";
+import { TokenRefreshLink } from "apollo-link-token-refresh";
+import jwtDecode from "jwt-decode";
 
 const cache = new InMemoryCache({});
 
@@ -43,6 +45,36 @@ const requestLink = new ApolloLink(
 
 const client = new ApolloClient({
   link: ApolloLink.from([
+    new TokenRefreshLink({
+      accessTokenField: "accessToken",
+      isTokenValidOrUndefined: () => {
+        const token = getAccessToken();
+
+        if (!token) {
+          return true;
+        }
+
+        try {
+          const { exp } = jwtDecode(token);
+          return exp * 1000 < Date.now();
+        } catch (err) {
+          return false;
+        }
+      },
+      fetchAccessToken: () => {
+        return fetch("http://localhost:8000/refresh_token", {
+          method: "POST",
+          credentials: "include",
+        });
+      },
+      handleFetch: (accessToken) => {
+        setAccessToken(accessToken);
+      },
+      handleError: (err) => {
+        console.warn("You refresh token is invalid. Try to login again.");
+        console.error(err);
+      },
+    }),
     onError(({ graphQLErrors, networkError }) => {
       console.log(graphQLErrors);
       console.log(networkError);
