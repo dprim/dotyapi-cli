@@ -5,7 +5,16 @@ import { useMeQuery } from "../generated/graphql";
 interface Props {}
 
 export const Header: React.FC<Props> = () => {
-  const { data } = useMeQuery();
+  const { data, loading } = useMeQuery();
+  let body: any = null;
+
+  if (loading) {
+    body = null;
+  } else if (data && data.me) {
+    body = <div>You are logged in as: {data.me.email} </div>;
+  } else {
+    body = <div>not logged in</div>;
+  }
 
   return (
     <header>
@@ -22,9 +31,7 @@ export const Header: React.FC<Props> = () => {
         <div>
           <Link to="/bye">Bye</Link>
         </div>
-        {data && data.me ? (
-          <div>You are logged in as: {data.me.email}</div>
-        ) : null}
+        {body}
       </div>
     </header>
   );
