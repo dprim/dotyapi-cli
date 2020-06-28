@@ -2,7 +2,7 @@
 
 ---
 
-Auth2 is a front-end website with bare-bones structure connecting to a GraphQL authentication server at the background. It uses jwt tokens to authenticate users and keep them logged in using refresh tokens.
+Auth2 is a bare-bones React.JS app with an apollo connector, connecting to a GraphQL authentication server in the backend. It uses jwt tokens to authenticate users, and refresh tokens to maintain state.
 
 # Instructions to run
 
@@ -10,9 +10,9 @@ Auth2 is a front-end website with bare-bones structure connecting to a GraphQL a
 
 This project is packaged via npm; the respective package.json file contains all required scripts.
 
-> For convenience, `.env` file is attached with the repository and the database configuration are already in place. Not recommended for production.
+> For convenience, `.env` file is attached within the repository. Not recommended for production.
 
-In order to the run the project, first the dependencies need to be installed.
+In order to the run the project, first install the dependencies. 
 
 ---
 
@@ -20,11 +20,12 @@ To install all dependencies:
 
 ```
     `yarn install` or `npm install`
+
 ```
 
 ---
 
-To start the server:
+To start the website:
 
 ```
     `yarn start` or `npm start`
@@ -32,17 +33,8 @@ To start the server:
 
 ---
 
-The project expects a postgresql database server at port `5432` with the appropriate configuration; failure to find a database-server would cause the server to throw an error. Refer to the `ormconfig.json` for details on configuration. Any changes in database configuration must be corresponded by changes in the `ormconfig.json` file.
+The project expects a graphql server at port `8000/graphql` with the appropriate configuration; failure to find the serve would cause the apollo connector to crash. The project is ran via `nodemon`, any changes in the files would cause the server to restart for faster dev. experience.
 
-If database configurations are met then the server will launch at `localhost:8000/graphql`. The project is ran via `nodemon`, any changes in the files would cause the server to restart for faster dev. experience.
-
-# Database Schema
-
-![UserModel](https://i.ibb.co/9W1MhsR/User-Model-1.jpg)
-
-#### User Model
-
-A simplistic model for user to illustrate the authentication example.
 
 # Graph QL API: types, mutation and queries
 
