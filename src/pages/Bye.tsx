@@ -8,7 +8,7 @@ export const Bye: React.FC<RouteComponentProps> = ({ history }) => {
   const { data, loading, error } = useByeQuery({
     fetchPolicy: "network-only",
   });
-  console.log(data)
+  console.log(data);
   if (error) {
     console.log(error);
     return <div>err</div>;
