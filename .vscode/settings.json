@@ -1,0 +1,5 @@
+{
+  "workbench.startupEditor": "readme",
+  "npm.packageManager": "yarn",
+  "rest-client.requestNameAsResponseTabTitle": true
+}
